@@ -1,7 +1,5 @@
 import postgres from 'postgres';
-/* eslint-disable @typescript-eslint/no-var-requires */
-const bcrypt = require('bcryptjs');
-/* eslint-enable @typescript-eslint/no-var-requires */
+import bcrypt from 'bcrypt';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
