@@ -103,88 +103,18 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
-    const result = await sql.begin(async (transaction) => {
-      await seedUsers(transaction);
-      await seedCustomers(transaction);
-      await seedInvoices(transaction);
-      await seedRevenue(transaction);
-    });
+    const result = await sql.begin(async (sql) => [
+      seedUsers(),
+      seedCustomers(),
+      seedInvoices(),
+      seedRevenue(),
+    ]);
+ 
 
     console.log('Seeding completed:', result);
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
-    console.error('Error during seeding:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }
-
-async function seedUsers(sql: postgres.Sql) {
-  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    );
-  `;
-
-  const insertedUsers = await Promise.all(
-    users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      return sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-    }),
-  );
-
-  return insertedUsers;
-}
-
-export async function GET() {
-  try {
-    const result = await sql.begin(async (transaction) => {
-      await seedUsers(transaction);
-      await seedCustomers(transaction);
-      await seedInvoices(transaction);
-      await seedRevenue(transaction);
-    });
-
-    console.log('Seeding completed:', result);
-
-    return Response.json({ message: 'Database seeded successfully' });
-  } catch (error) {
-    console.error('Error during seeding:', error);
-    return Response.json({ error: error.message }, { status: 500 });
-  }
-}
-
-async function seedUsers(sql: postgres.Sql) {
-  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    );
-  `;
-
-  const insertedUsers = await Promise.all(
-    users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      return sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-    }),
-  );
-
-  return insertedUsers;
-}
-
-// Similarly, update seedCustomers, seedInvoices, and seedRevenue to accept `sql` as a parameter
