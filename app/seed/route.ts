@@ -1,4 +1,7 @@
 import postgres from 'postgres';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const bcrypt = require('bcryptjs');
+/* eslint-enable @typescript-eslint/no-var-requires */
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -16,7 +19,7 @@ async function seedUsers() {
 
   const insertedUsers = await Promise.all(
     users.map(async (user) => {
-      const bcrypt = require('bcryptjs');
+      
       const hashedPassword = await bcrypt.hash(user.password, 10);
       return sql`
         INSERT INTO users (id, name, email, password)
