@@ -24,12 +24,14 @@
     }
   },
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "app/lib/placeholder-data.ts",
-    "scripts/seed.js"
-  ],
+  "next-env.d.ts",
+  "**/*.ts",
+  "**/*.tsx",
+  ".next/types/**/*.ts",
+  "app/lib/placeholder-data.ts",
+  "scripts/seed.js",
+  "types", // Ensure this line is present
+  "app/**/*"
+],
   "exclude": ["node_modules"]
 }
